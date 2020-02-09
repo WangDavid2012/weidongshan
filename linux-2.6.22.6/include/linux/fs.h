@@ -526,7 +526,9 @@ static inline int mapping_writably_mapped(struct address_space *mapping)
 #else
 #define i_size_ordered_init(inode) do { } while (0)
 #endif
-
+//内核用inode结构表示文件
+//file和inode的区别:文件指向inode，但是file可以打开多次
+//每次打开都有一个文件描述符，这些文件描述符指向一个inode
 struct inode {
 	struct hlist_node	i_hash;
 	struct list_head	i_list;
@@ -1084,6 +1086,7 @@ typedef int (*read_actor_t)(read_descriptor_t *, struct page *, unsigned long, u
  * NOTE:
  * read, write, poll, fsync, readv, writev, unlocked_ioctl and compat_ioctl
  * can be called without the big kernel lock held in all filesystems.
+ * 文件的基本操作
  */
 struct file_operations {
 	struct module *owner;

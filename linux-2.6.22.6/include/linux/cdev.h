@@ -10,12 +10,14 @@ struct file_operations;
 struct inode;
 struct module;
 
+
+//字符设备结构体  david
 struct cdev {
-	struct kobject kobj;
-	struct module *owner;
-	const struct file_operations *ops;
-	struct list_head list;
-	dev_t dev;
+	struct kobject kobj;                 //内嵌的kobject结构
+	struct module *owner;               //模块所属
+	const struct file_operations *ops;  //文件操作结构体指针
+	struct list_head list;              //链表
+	dev_t dev;                          //设备号
 	unsigned int count;
 };
 

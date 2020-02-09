@@ -736,6 +736,15 @@ out_fds:
 	return err;
 }
 
+
+/********************************************
+app:µ÷ÓÃpoll
+kernel:sys_poll
+	do_sys_poll
+		poll_initwait
+		do_poll
+*/
+
 asmlinkage long sys_poll(struct pollfd __user *ufds, unsigned int nfds,
 			long timeout_msecs)
 {

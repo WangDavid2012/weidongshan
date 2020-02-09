@@ -28,11 +28,8 @@ static int first_drv_open(struct inode *inode, struct file *file)
 static ssize_t first_drv_write(struct file *file, const char __user *buf, size_t count, loff_t * ppos)
 {
 	int val;
-
 	//printk("first_drv_write\n");
-
 	copy_from_user(&val, buf, count); //	copy_to_user();
-
 	if (val == 1)
 	{
 		// 点灯
@@ -57,6 +54,9 @@ static struct file_operations first_drv_fops = {
 int major;
 static int first_drv_init(void)
 {
+	// linux2.4及以前的版本使用此种方式
+	// 现在使用cdev_init() cdev_add() 两个函数实现
+	// cdev_del()
 	major = register_chrdev(0, "first_drv", &first_drv_fops); // 注册, 告诉内核
 
 	firstdrv_class = class_create(THIS_MODULE, "firstdrv");
@@ -72,7 +72,6 @@ static int first_drv_init(void)
 static void first_drv_exit(void)
 {
 	unregister_chrdev(major, "first_drv"); // 卸载
-
 	class_device_unregister(firstdrv_class_dev);
 	class_destroy(firstdrv_class);
 	iounmap(gpfcon);

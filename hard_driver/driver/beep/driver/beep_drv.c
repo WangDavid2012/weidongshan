@@ -3,7 +3,6 @@
 	蜂鸣器控制引脚是GPB0,低电平时，蜂鸣器响，高电平时，停止
 	time：2018/12/10
 	author：david
-	
 ********************************************************/
 #include <linux/errno.h>
 #include <linux/kernel.h>
@@ -131,6 +130,7 @@ static struct file_operations beep_remap_ops = {
 /*
  * There's no need for us to maintain any
  * special housekeeping info, so we just deal with raw cdevs.
+ * 定义了一个cdev结构
  */
 static struct cdev BeepDevs;
 

@@ -974,7 +974,7 @@ long do_sys_open(int dfd, const char __user *filename, int flags, int mode)
 	}
 	return fd;
 }
-
+//open 函数的底层实现
 asmlinkage long sys_open(const char __user *filename, int flags, int mode)
 {
 	long ret;

@@ -193,6 +193,8 @@ __unregister_chrdev_region(unsigned major, unsigned baseminor, int minorct)
  * @name: the name of the device or driver.
  *
  * Return value is zero on success, a negative error code on failure.
+ * 手工分配主设备号，from 表示起始的从设备号，count 从设备的个数，从设备名称
+ * 返回值0 表示成功，其他值失败
  */
 int register_chrdev_region(dev_t from, unsigned count, const char *name)
 {
@@ -229,6 +231,7 @@ fail:
  * Allocates a range of char device numbers.  The major number will be
  * chosen dynamically, and returned (along with the first minor number)
  * in @dev.  Returns zero or a negative error code.
+ * 自动分配设备号 ------david
  */
 int alloc_chrdev_region(dev_t *dev, unsigned baseminor, unsigned count,
 			const char *name)
