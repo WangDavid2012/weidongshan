@@ -1275,7 +1275,7 @@ static const struct file_operations input_fops = {
 	.owner = THIS_MODULE,
 	.open = input_open_file,
 };
-
+//入口函数-输入子系统----david
 static int __init input_init(void)
 {
 	int err;

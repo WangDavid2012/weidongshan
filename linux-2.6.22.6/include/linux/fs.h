@@ -539,7 +539,7 @@ struct inode {
 	unsigned int		i_nlink;
 	uid_t			i_uid;
 	gid_t			i_gid;
-	dev_t			i_rdev;
+	dev_t			i_rdev;     //该字段包含了真正的设备编号
 	unsigned long		i_version;
 	loff_t			i_size;
 #ifdef __NEED_I_SIZE_ORDERED

@@ -449,6 +449,9 @@ static int exact_lock(dev_t dev, void *data)
 }
 
 /**
+ * 向系统中添加一个字符设备
+ * 字符设备的结构体参数赋值，包括字符设备号，字符设备数量
+   然后将这个结构体放到系统中
  * cdev_add() - add a char device to the system
  * @p: the cdev structure for the device
  * @dev: the first device number for which this device is responsible
@@ -528,6 +531,7 @@ struct cdev *cdev_alloc(void)
  *
  * Initializes @cdev, remembering @fops, making it ready to add to the
  * system with cdev_add().
+ * 初始化cdev结构体，并将cdev结构体与fops关联  david
  */
 void cdev_init(struct cdev *cdev, const struct file_operations *fops)
 {

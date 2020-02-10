@@ -36,6 +36,7 @@ struct class;
 struct class_device;
 struct bus_type;
 
+//总线属性结构体
 struct bus_attribute {
 	struct attribute	attr;
 	ssize_t (*show)(struct bus_type *, char * buf);
@@ -66,10 +67,15 @@ struct bus_type {
 	struct driver_attribute	* drv_attrs;
 	struct bus_attribute drivers_autoprobe_attr;
 	struct bus_attribute drivers_probe_attr;
-
+	//将设备和驱动关联，设备添加到总线上，驱动添加到总线上
+	//当一个新设备或者驱动，添加到这个总线上时，该方法被调用
+	//用于判断指定的驱动程序是否能够处理指定的应用，若可以，返回0
 	int		(*match)(struct device * dev, struct device_driver * drv);
+
+	//用户控件产生热插拔事件之前，这个方法允许总线添加环境变量
 	int		(*uevent)(struct device *dev, char **envp,
 				  int num_envp, char *buffer, int buffer_size);
+	
 	int		(*probe)(struct device * dev);
 	int		(*remove)(struct device * dev);
 	void		(*shutdown)(struct device * dev);
@@ -118,8 +124,7 @@ extern int bus_unregister_notifier(struct bus_type *bus,
 #define BUS_NOTIFY_ADD_DEVICE		0x00000001 /* device added */
 #define BUS_NOTIFY_DEL_DEVICE		0x00000002 /* device removed */
 #define BUS_NOTIFY_BOUND_DRIVER		0x00000003 /* driver bound to device */
-#define BUS_NOTIFY_UNBIND_DRIVER	0x00000004 /* driver about to be
-						      unbound */
+#define BUS_NOTIFY_UNBIND_DRIVER	0x00000004 /* driver about to be unbound */
 
 struct device_driver {
 	const char		* name;
