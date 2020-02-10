@@ -1,11 +1,11 @@
 /*********************************************************************************************
-#####         ÉÏº£Ç¶ÈëÊ½¼ÒÔ°-¿ª·¢°åÉÌ³Ç         #####
-#####                    www.embedclub.com                        #####
-#####             http://embedclub.taobao.com               #####
+#####         ä¸Šæµ·åµŒå…¥å¼å®¶å›­-å¼€å‘æ¿å•†åŸ                      #####
+#####                    www.embedclub.com                   #####
+#####             http://embedclub.taobao.com                #####
 
-* File£º	read_noblock.c
+* Fileï¼š	read_noblock.c
 * Author:	Hanson
-* Desc£º	test  Beep driver with wait queue
+* Descï¼š	test  Beep driver with wait queue
 * History:	May 16th 2011
 *********************************************************************************************/
 

@@ -1,11 +1,11 @@
 /*********************************************************************************************
-#####         …œ∫£«∂»Î Ωº“‘∞-ø™∑¢∞Â…Ã≥«         #####
+#####         ‰∏äÊµ∑ÂµåÂÖ•ÂºèÂÆ∂Âõ≠-ÂºÄÂèëÊùøÂïÜÂüé         #####
 #####                    www.embedclub.com                        #####
 #####             http://embedclub.taobao.com               #####
 
-* File£∫	leds_les.c
+* FileÔºö	leds_les.c
 * Author:	Hanson
-* Desc£∫	Leds test code
+* DescÔºö	Leds test code
 * History:	May 16th 2011
 *********************************************************************************************/
 
@@ -15,69 +15,69 @@
 #include <sys/ioctl.h>
 
 #define LED_MAGIC 'k'
-#define IOCTL_LED_ON _IOW (LED_MAGIC, 1, int)
-#define IOCTL_LED_OFF _IOW (LED_MAGIC, 2, int)
-#define IOCTL_LED_RUN _IOW (LED_MAGIC, 3, int)
-#define IOCTL_LED_SHINE _IOW (LED_MAGIC, 4, int)
-#define IOCTL_LED_ALLON _IOW (LED_MAGIC, 5, int)
-#define IOCTL_LED_ALLOFF _IOW (LED_MAGIC, 6, int)
+#define IOCTL_LED_ON _IOW(LED_MAGIC, 1, int)
+#define IOCTL_LED_OFF _IOW(LED_MAGIC, 2, int)
+#define IOCTL_LED_RUN _IOW(LED_MAGIC, 3, int)
+#define IOCTL_LED_SHINE _IOW(LED_MAGIC, 4, int)
+#define IOCTL_LED_ALLON _IOW(LED_MAGIC, 5, int)
+#define IOCTL_LED_ALLOFF _IOW(LED_MAGIC, 6, int)
 
 void usage(char *exename)
 {
-	printf("Usage:\n");
-	printf("    %s <led_no> <on/off>\n", exename);
-	printf("    led_no = 1, 2, 3 or 4\n");
+    printf("Usage:\n");
+    printf("    %s <led_no> <on/off>\n", exename);
+    printf("    led_no = 1, 2, 3 or 4\n");
 }
 
 int main(int argc, char **argv)
 {
-	unsigned int led_no;
-	int fd = -1;
-        unsigned int count=10;
-    
-	if (argc > 3 || argc == 1)
-		goto err;
-        
-	fd = open("/dev/led", 0);  // ¥Úø™…Ë±∏
-	if (fd < 0) {
-		printf("Can't open /dev/leds\n");
-		return -1;	
-	}	
-		
-	if (argc == 2) {
-		if (!strcmp(argv[1], "on")) {
-			ioctl(fd, IOCTL_LED_ALLON, &count);    // µ„¡¡À¸
-		} else if (!strcmp(argv[1], "off")) {
-			ioctl(fd, IOCTL_LED_ALLOFF, &count);   // œ®√À¸
-		} else if (!strcmp(argv[1], "run")) {
-			ioctl(fd, IOCTL_LED_RUN, &count);   //‘À––≈‹¬Ìµ∆
-                } else if (!strcmp(argv[1], "shine")) {
-			ioctl(fd, IOCTL_LED_SHINE, &count);   //…¡À∏
-		} else {
-			goto err;
-		}
-	}
-		
-	if (argc == 3) {
-		led_no = strtoul(argv[1], NULL, 0) - 1;    // ≤Ÿ◊˜ƒƒ∏ˆLED£ø
-		if (led_no > 3)
-			goto err;	    
-		if (!strcmp(argv[2], "on")) {
-			ioctl(fd, IOCTL_LED_ON, &led_no);    // µ„¡¡
-		} else if (!strcmp(argv[2], "off")) {
-			ioctl(fd, IOCTL_LED_OFF, &led_no);   // œ®√
-		} else {
-			goto err;
-		}
-	}
-    
-	close(fd);
-	return 0;
-    
+    unsigned int led_no;
+    int fd = -1;
+    unsigned int count=10;
+
+    if (argc > 3 || argc == 1)
+        goto err;
+
+    fd = open("/dev/led", 0);  // ÊâìÂºÄËÆæÂ§á
+    if (fd < 0) {
+        printf("Can't open /dev/leds\n");
+        return -1;
+    }
+
+    if (argc == 2) {
+        if (!strcmp(argv[1], "on")) {
+            ioctl(fd, IOCTL_LED_ALLON, &count);    // ÁÇπ‰∫ÆÂÆÉ
+        } else if (!strcmp(argv[1], "off")) {
+            ioctl(fd, IOCTL_LED_ALLOFF, &count);   // ÁÜÑÁÅ≠ÂÆÉ
+        } else if (!strcmp(argv[1], "run")) {
+            ioctl(fd, IOCTL_LED_RUN, &count);   //ËøêË°åË∑ëÈ©¨ÁÅØ
+        } else if (!strcmp(argv[1], "shine")) {
+            ioctl(fd, IOCTL_LED_SHINE, &count);   //Èó™ÁÉÅ
+        } else {
+            goto err;
+        }
+    }
+
+    if (argc == 3) {
+        led_no = strtoul(argv[1], NULL, 0) - 1;    // Êìç‰ΩúÂì™‰∏™LEDÔºü
+        if (led_no > 3)
+            goto err;
+        if (!strcmp(argv[2], "on")) {
+            ioctl(fd, IOCTL_LED_ON, &led_no);    // ÁÇπ‰∫Æ
+        } else if (!strcmp(argv[2], "off")) {
+            ioctl(fd, IOCTL_LED_OFF, &led_no);   // ÁÜÑÁÅ≠
+        } else {
+            goto err;
+        }
+    }
+
+    close(fd);
+    return 0;
+
 err:
-	if (fd > 0) 
-		close(fd);
-	usage(argv[0]);
-	return -1;
+    if (fd > 0)
+        close(fd);
+    usage(argv[0]);
+    return -1;
 }
 

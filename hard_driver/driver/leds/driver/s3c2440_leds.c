@@ -1,11 +1,11 @@
 /*********************************************************************************************
-#####         ÉÏº£Ç¶ÈëÊ½¼ÒÔ°-¿ª·¢°åÉÌ³Ç         #####
+#####         ä¸Šæµ·åµŒå…¥å¼å®¶å›­-å¼€å‘æ¿å•†åŸ         #####
 #####                    www.embedclub.com                        #####
 #####             http://embedclub.taobao.com               #####
 
-* File£º	s3c2440_leds.c
+* Fileï¼š	s3c2440_leds.c
 * Author:	Hanson
-* Desc£º	Leds driver code
+* Descï¼š	Leds driver code
 * History:	May 16th 2011
 *********************************************************************************************/
 #include <linux/errno.h>
@@ -25,26 +25,25 @@
 #include <asm/uaccess.h>
 #include <mach/regs-clock.h>
 #include <plat/regs-timer.h>
-	 
+
 #include <mach/regs-gpio.h>
-// /home/student/linux-2.6.32.2/arch/arm/mach-s3c2410/include/mach/regs-gpio.h
 #include <linux/cdev.h>
 
-static int led_major = 0;     /* Ö÷Éè±¸ºÅ */
+static int led_major = 0;     /* ä¸»è®¾å¤‡å· */
 static struct cdev LedDevs;
 
-/* Ó¦ÓÃ³ÌĞòÖ´ĞĞioctl(fd, cmd, arg)Ê±µÄµÚ2¸ö²ÎÊı */
+/* åº”ç”¨ç¨‹åºæ‰§è¡Œioctl(fd, cmd, arg)æ—¶çš„ç¬¬2ä¸ªå‚æ•° */
 #define LED_MAGIC 'k'
-#define IOCTL_LED_ON _IOW (LED_MAGIC, 1, int)
-#define IOCTL_LED_OFF _IOW (LED_MAGIC, 2, int)
-#define IOCTL_LED_RUN _IOW (LED_MAGIC, 3, int)
-#define IOCTL_LED_SHINE _IOW (LED_MAGIC, 4, int)
-#define IOCTL_LED_ALLON _IOW (LED_MAGIC, 5, int)
-#define IOCTL_LED_ALLOFF _IOW (LED_MAGIC, 6, int)
+#define IOCTL_LED_ON _IOW(LED_MAGIC, 1, int)
+#define IOCTL_LED_OFF _IOW(LED_MAGIC, 2, int)
+#define IOCTL_LED_RUN _IOW(LED_MAGIC, 3, int)
+#define IOCTL_LED_SHINE _IOW(LED_MAGIC, 4, int)
+#define IOCTL_LED_ALLON _IOW(LED_MAGIC, 5, int)
+#define IOCTL_LED_ALLOFF _IOW(LED_MAGIC, 6, int)
 
 
 
-/* ÓÃÀ´Ö¸¶¨LEDËùÓÃµÄGPIOÒı½Å */
+/* ç”¨æ¥æŒ‡å®šLEDæ‰€ç”¨çš„GPIOå¼•è„š */
 static unsigned long led_table [] = {
     S3C2410_GPB(5),
     S3C2410_GPB(6),
@@ -53,14 +52,14 @@ static unsigned long led_table [] = {
 };
 
 
-/* Ó¦ÓÃ³ÌĞò¶ÔÉè±¸ÎÄ¼ş/dev/ledÖ´ĞĞopen(...)Ê±£¬
- * ¾Í»áµ÷ÓÃs3c24xx_leds_openº¯Êı
+/* åº”ç”¨ç¨‹åºå¯¹è®¾å¤‡æ–‡ä»¶/dev/ledæ‰§è¡Œopen(...)æ—¶ï¼Œ
+ * å°±ä¼šè°ƒç”¨s3c24xx_leds_openå‡½æ•°
  */
 static int s3c2440_leds_open(struct inode *inode, struct file *file)
 {
-    int i;    
+    int i;
     for (i = 0; i < 4; i++) {
-        // ÉèÖÃGPIOÒı½ÅµÄ¹¦ÄÜ£º±¾Çı¶¯ÖĞLEDËùÉæ¼°µÄGPIOÒı½ÅÉèÎªÊä³ö¹¦ÄÜ
+        // è®¾ç½®GPIOå¼•è„šçš„åŠŸèƒ½ï¼šæœ¬é©±åŠ¨ä¸­LEDæ‰€æ¶‰åŠçš„GPIOå¼•è„šè®¾ä¸ºè¾“å‡ºåŠŸèƒ½
         s3c2410_gpio_cfgpin(led_table[i], S3C2410_GPIO_OUTPUT);
     }
     return 0;
@@ -84,87 +83,89 @@ void leds_all_off()
     }
 }
 
-/* Ó¦ÓÃ³ÌĞò¶ÔÉè±¸ÎÄ¼ş/dev/ledsÖ´ĞĞioctl(...)Ê±£¬
- * ¾Í»áµ÷ÓÃs3c24xx_leds_ioctlº¯Êı
+/* åº”ç”¨ç¨‹åºå¯¹è®¾å¤‡æ–‡ä»¶/dev/ledsæ‰§è¡Œioctl(...)æ—¶ï¼Œ
+ * å°±ä¼šè°ƒç”¨s3c24xx_leds_ioctlå‡½æ•°
+ 
+ * åº”ç”¨ç¨‹åº ioctl(fd, IOCTL_LED_OFF, &led_no);
  */
-static int s3c2440_leds_ioctl(struct inode *inode, 
-								struct file *file, 
-								unsigned int cmd, 
-								unsigned long arg)
+static int s3c2440_leds_ioctl(struct inode *inode,
+                              struct file *file,
+                              unsigned int cmd,
+                              unsigned long arg)
 {
     unsigned int data;
 //    if (copy_from_user(&data, (unsigned int __user *)arg, sizeof(int)))
 //        return -EFAULT;
 
-// data = (unsigned int)arg;  // ·½·¨Ò»:Êı¾İ´«µİ
+// data = (unsigned int)arg;  // æ–¹æ³•ä¸€:æ•°æ®ä¼ é€’
 
-    if (__get_user(data, (unsigned int __user *)arg)) //·½·¨¶ş:Ö¸Õë²ÎÊı´«µİ
+    if (__get_user(data, (unsigned int __user *)arg)) //æ–¹æ³•äºŒ:æŒ‡é’ˆå‚æ•°ä¼ é€’
         return -EFAULT;
 
     switch(cmd) {
-        case IOCTL_LED_ON:
-            // ÉèÖÃÖ¸¶¨Òı½ÅµÄÊä³öµçÆ½Îª0
-            s3c2410_gpio_setpin(led_table[data], 0);
-            return 0;
+    case IOCTL_LED_ON:
+        // è®¾ç½®æŒ‡å®šå¼•è„šçš„è¾“å‡ºç”µå¹³ä¸º0
+        s3c2410_gpio_setpin(led_table[data], 0);
+        return 0;
 
-        case IOCTL_LED_OFF:
-            // ÉèÖÃÖ¸¶¨Òı½ÅµÄÊä³öµçÆ½Îª1
-            s3c2410_gpio_setpin(led_table[data], 1);
-            return 0;
-            
-        case IOCTL_LED_RUN:
-            // ÅÜÂíµÆ
-            {
-               int i,j;
-                leds_all_off();            
-                //printk("IOCTL_LED_RUN");
-                for (i=0;i<data;i++)
-                    for (j=0;j<4;j++) {
-                        s3c2410_gpio_setpin(led_table[j], 0);
-                        mdelay(400); //delay 400ms
-                        s3c2410_gpio_setpin(led_table[j], 1);
-                        mdelay(400); //delay 400ms
-                    }  
-                return 0;
-             }
-          
-        case IOCTL_LED_SHINE:
-            // LED ÉÁË¸
-            {
-                int i,j;
-                leds_all_off();
-                printk("IOCTL_LED_SHINE\n");
-                for (i=0;i<data;i++) {
-                    for (j=0;j<4;j++)
-                        s3c2410_gpio_setpin(led_table[j], 0);
-                    mdelay(400); //delay 400ms
-                    for (j=0;j<4;j++)
-                        s3c2410_gpio_setpin(led_table[j], 1);
-                    mdelay(400);
-                }
-                return 0;
-           }
-        case IOCTL_LED_ALLON:
-            // ÉèÖÃÖ¸¶¨Òı½ÅµÄÊä³öµçÆ½Îª0
-            leds_all_on();
-            return 0;
-        case IOCTL_LED_ALLOFF:
-            // ÉèÖÃÖ¸¶¨Òı½ÅµÄÊä³öµçÆ½Îª1
-            leds_all_off();
-            return 0;
+    case IOCTL_LED_OFF:
+        // è®¾ç½®æŒ‡å®šå¼•è„šçš„è¾“å‡ºç”µå¹³ä¸º1
+        s3c2410_gpio_setpin(led_table[data], 1);
+        return 0;
 
-        default:
-            return -EINVAL;
+    case IOCTL_LED_RUN:
+        // è·‘é©¬ç¯
+    {
+        int i,j;
+        leds_all_off();
+        //printk("IOCTL_LED_RUN");
+        for (i=0; i<data; i++)
+            for (j=0; j<4; j++) {
+                s3c2410_gpio_setpin(led_table[j], 0);
+                mdelay(400); //delay 400ms
+                s3c2410_gpio_setpin(led_table[j], 1);
+                mdelay(400); //delay 400ms
+            }
+        return 0;
+    }
+
+    case IOCTL_LED_SHINE:
+        // LED é—ªçƒ
+    {
+        int i,j;
+        leds_all_off();
+        printk("IOCTL_LED_SHINE\n");
+        for (i=0; i<data; i++) {
+            for (j=0; j<4; j++)
+                s3c2410_gpio_setpin(led_table[j], 0);
+            mdelay(400); //delay 400ms
+            for (j=0; j<4; j++)
+                s3c2410_gpio_setpin(led_table[j], 1);
+            mdelay(400);
+        }
+        return 0;
+    }
+    case IOCTL_LED_ALLON:
+        // è®¾ç½®æŒ‡å®šå¼•è„šçš„è¾“å‡ºç”µå¹³ä¸º0
+        leds_all_on();
+        return 0;
+    case IOCTL_LED_ALLOFF:
+        // è®¾ç½®æŒ‡å®šå¼•è„šçš„è¾“å‡ºç”µå¹³ä¸º1
+        leds_all_off();
+        return 0;
+
+    default:
+        return -EINVAL;
     }
 }
 
-/* Õâ¸ö½á¹¹ÊÇ×Ö·ûÉè±¸Çı¶¯³ÌĞòµÄºËĞÄ
- * µ±Ó¦ÓÃ³ÌĞò²Ù×÷Éè±¸ÎÄ¼şÊ±Ëùµ÷ÓÃµÄopen¡¢read¡¢writeµÈº¯Êı£¬
- * ×îÖÕ»áµ÷ÓÃÕâ¸ö½á¹¹ÖĞÖ¸¶¨µÄ¶ÔÓ¦º¯Êı
+/* è¿™ä¸ªç»“æ„æ˜¯å­—ç¬¦è®¾å¤‡é©±åŠ¨ç¨‹åºçš„æ ¸å¿ƒ
+ * å½“åº”ç”¨ç¨‹åºæ“ä½œè®¾å¤‡æ–‡ä»¶æ—¶æ‰€è°ƒç”¨çš„openã€readã€writeç­‰å‡½æ•°ï¼Œ
+ * æœ€ç»ˆä¼šè°ƒç”¨è¿™ä¸ªç»“æ„ä¸­æŒ‡å®šçš„å¯¹åº”å‡½æ•°
  */
 static struct file_operations s3c2440_leds_fops = {
-    .owner  =   THIS_MODULE,    /* ÕâÊÇÒ»¸öºê£¬ÍÆÏò±àÒëÄ£¿éÊ±×Ô¶¯´´½¨µÄ__this_module±äÁ¿ */
-    .open   =   s3c2440_leds_open,     
+    .owner  =   THIS_MODULE,    /* è¿™æ˜¯ä¸€ä¸ªå®ï¼Œæ¨å‘ç¼–è¯‘æ¨¡å—æ—¶è‡ªåŠ¨åˆ›å»ºçš„__this_moduleå˜é‡ */
+    .open   =   s3c2440_leds_open,
     .ioctl  =   s3c2440_leds_ioctl,
 };
 
@@ -173,67 +174,67 @@ static struct file_operations s3c2440_leds_fops = {
  * Set up the cdev structure for a device.
  */
 static void led_setup_cdev(struct cdev *dev, int minor,
-		struct file_operations *fops)
+                           struct file_operations *fops)
 {
-	int err, devno = MKDEV(led_major, minor);
-    
-	cdev_init(dev, fops);
-	dev->owner = THIS_MODULE;
-	dev->ops = fops;
-	err = cdev_add (dev, devno, 1);
-	/* Fail gracefully if need be */
-	if (err)
-		printk (KERN_NOTICE "Error %d adding Led%d", err, minor);
+    int err, devno = MKDEV(led_major, minor);
+
+    cdev_init(dev, fops);
+    dev->owner = THIS_MODULE;
+    dev->ops = fops;
+    err = cdev_add (dev, devno, 1);
+    /* Fail gracefully if need be */
+    if (err)
+        printk (KERN_NOTICE "Error %d adding Led%d", err, minor);
 }
 
 /*
- * Ö´ĞĞ¡°insmod s3c24xx_leds.ko¡±ÃüÁîÊ±¾Í»áµ÷ÓÃÕâ¸öº¯Êı
+ * æ‰§è¡Œâ€œinsmod s3c24xx_leds.koâ€å‘½ä»¤æ—¶å°±ä¼šè°ƒç”¨è¿™ä¸ªå‡½æ•°
  */
 
 static int __init s3c2440_leds_init(void)
 {
-	int result;
-	dev_t dev = MKDEV(led_major, 0);
-	char dev_name[]="led";  /* ¼ÓÔØÄ£Ê½ºó£¬Ö´ĞĞ¡±cat /proc/devices¡±ÃüÁî¿´µ½µÄÉè±¸Ãû³Æ */
+    int result;
+    dev_t dev = MKDEV(led_major, 0);
+    char dev_name[]="led";  /* åŠ è½½æ¨¡å¼åï¼Œæ‰§è¡Œâ€cat /proc/devicesâ€å‘½ä»¤çœ‹åˆ°çš„è®¾å¤‡åç§° */
 
-	/* Figure out our device number. */
-	if (led_major)
-		result = register_chrdev_region(dev, 1, dev_name);
-	else {
-		result = alloc_chrdev_region(&dev, 0, 1, dev_name);
-		led_major = MAJOR(dev);
-	}
-	if (result < 0) {
-		printk(KERN_WARNING "leds: unable to get major %d\n", led_major);
-		return result;
-	}
-	if (led_major == 0)
-		led_major = result;
+    /* Figure out our device number. */
+    if (led_major)
+        result = register_chrdev_region(dev, 1, dev_name);
+    else {
+        result = alloc_chrdev_region(&dev, 0, 1, dev_name);
+        led_major = MAJOR(dev);
+    }
+    if (result < 0) {
+        printk(KERN_WARNING "leds: unable to get major %d\n", led_major);
+        return result;
+    }
+    if (led_major == 0)
+        led_major = result;
 
-	/* Now set up cdev. */
-	led_setup_cdev(&LedDevs, 0, &s3c2440_leds_fops);
-	printk("Led device installed, with major %d\n", led_major);
-	printk("The device name is: %s\n", dev_name);
-	return 0;
+    /* Now set up cdev. */
+    led_setup_cdev(&LedDevs, 0, &s3c2440_leds_fops);
+    printk("Led device installed, with major %d\n", led_major);
+    printk("The device name is: %s\n", dev_name);
+    return 0;
 }
 
 /*
- * Ö´ĞĞ¡±rmmod s3c24xx_leds¡±ÃüÁîÊ±¾Í»áµ÷ÓÃÕâ¸öº¯Êı 
+ * æ‰§è¡Œâ€rmmod s3c24xx_ledsâ€å‘½ä»¤æ—¶å°±ä¼šè°ƒç”¨è¿™ä¸ªå‡½æ•°
  */
 static void __exit s3c2440_leds_exit(void)
 {
-    /* Ğ¶ÔØÇı¶¯³ÌĞò */
-	cdev_del(&LedDevs);
-	unregister_chrdev_region(MKDEV(led_major, 0), 1);
-	printk("Led device uninstalled\n");
+    /* å¸è½½é©±åŠ¨ç¨‹åº */
+    cdev_del(&LedDevs);
+    unregister_chrdev_region(MKDEV(led_major, 0), 1);
+    printk("Led device uninstalled\n");
 }
 
-/* ÕâÁ½ĞĞÖ¸¶¨Çı¶¯³ÌĞòµÄ³õÊ¼»¯º¯ÊıºÍĞ¶ÔØº¯Êı */
+/* è¿™ä¸¤è¡ŒæŒ‡å®šé©±åŠ¨ç¨‹åºçš„åˆå§‹åŒ–å‡½æ•°å’Œå¸è½½å‡½æ•° */
 module_init(s3c2440_leds_init);
 module_exit(s3c2440_leds_exit);
 
-/* ÃèÊöÇı¶¯³ÌĞòµÄÒ»Ğ©ĞÅÏ¢£¬²»ÊÇ±ØĞëµÄ */
-MODULE_AUTHOR("http://embedclub.taobao.com");             // Çı¶¯³ÌĞòµÄ×÷Õß
-MODULE_DESCRIPTION("s3c2440 LED Driver");   // Ò»Ğ©ÃèÊöĞÅÏ¢
-MODULE_LICENSE("Dual BSD/GPL");                             // ×ñÑ­µÄĞ­Òé
+/* æè¿°é©±åŠ¨ç¨‹åºçš„ä¸€äº›ä¿¡æ¯ï¼Œä¸æ˜¯å¿…é¡»çš„ */
+MODULE_AUTHOR("http://embedclub.taobao.com");             // é©±åŠ¨ç¨‹åºçš„ä½œè€…
+MODULE_DESCRIPTION("s3c2440 LED Driver");   // ä¸€äº›æè¿°ä¿¡æ¯
+MODULE_LICENSE("Dual BSD/GPL");                             // éµå¾ªçš„åè®®
 
