@@ -33,3 +33,5 @@
 #david add 2018/11/13
 *.zip
 *.tar
+
+debug_bin/
