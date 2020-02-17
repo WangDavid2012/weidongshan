@@ -1,11 +1,11 @@
 /*********************************************************************************************
-#####         ÉÏº£Ç¶ÈëÊ½¼ÒÔ°-¿ª·¢°åÉÌ³Ç         #####
+#####         ä¸Šæµ·åµŒå…¥å¼å®¶å›­-å¼€å‘æ¿å•†åŸ         #####
 #####                            www.embedclub.com                               #####
 #####                     http://embedclub.taobao.com                       #####
 
-* File£º		memdev_test.c
+* Fileï¼š		memdev_test.c
 * Author:		Hanson
-* Desc£º	virual memory  device driver test code
+* Descï¼š	virual memory  device driver test code
 * History:	May 20th 2011
 *********************************************************************************************/
 #include <stdio.h>
@@ -17,11 +17,11 @@ int main()
 	char Buf[4096];
 	int result;
 	
-	/*³õÊ¼»¯Buf*/
+	/*åˆå§‹åŒ–Buf*/
 	strcpy(Buf,"Mem is char dev!");
 	printf("BUF: %s\n",Buf);
 	
-	/*´ò¿ªÉè±¸ÎÄ¼ş*/
+	/*æ‰“å¼€è®¾å¤‡æ–‡ä»¶*/
 	fp0 = fopen("/dev/memdev0","r+");
 	if (fp0 == NULL)
 	{
@@ -29,7 +29,7 @@ int main()
 		return -1;
 	}
 	
-	/*Ğ´ÈëÉè±¸*/
+	/*å†™å…¥è®¾å¤‡*/
 	result = fwrite(Buf, sizeof(Buf), 1, fp0);
 	if (result  == -1)
 	{
@@ -37,15 +37,15 @@ int main()
 		return -1;
 	}
 	
-	/*ÖØĞÂ¶¨Î»ÎÄ¼şÎ»ÖÃ£¨Ë¼¿¼Ã»ÓĞ¸ÃÖ¸Áî£¬»áÓĞºÎºó¹û)*/
+	/*é‡æ–°å®šä½æ–‡ä»¶ä½ç½®ï¼ˆæ€è€ƒæ²¡æœ‰è¯¥æŒ‡ä»¤ï¼Œä¼šæœ‰ä½•åæœ)*/
 	fseek(fp0,0,SEEK_SET);
 	
-	/*Çå³ıBuf*/
+	/*æ¸…é™¤Buf*/
 	strcpy(Buf,"Buf is NULL!");
 	printf("BUF: %s\n",Buf);
 	
 	sleep(1);
-	/*¶Á³öÉè±¸*/
+	/*è¯»å‡ºè®¾å¤‡*/
 	result = fread(Buf, sizeof(Buf), 1, fp0);
 	if (result  == -1)
 	{
@@ -53,7 +53,7 @@ int main()
 		return -1;
 	}
 	
-	/*¼ì²â½á¹û*/
+	/*æ£€æµ‹ç»“æœ*/
 	printf("BUF: %s\n",Buf);
 	
 	return 0;	

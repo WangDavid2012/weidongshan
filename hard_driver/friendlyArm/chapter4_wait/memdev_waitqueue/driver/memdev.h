@@ -3,23 +3,22 @@
 #define _MEMDEV_H_
 
 #ifndef MEMDEV_MAJOR
-#define MEMDEV_MAJOR 0   /*Ô¤ÉèµÄmemµÄÖ÷Éè±¸ºÅ*/
+#define MEMDEV_MAJOR 0   /*é¢„è®¾çš„memçš„ä¸»è®¾å¤‡å·*/
 #endif
 
 #ifndef MEMDEV_NR_DEVS
-#define MEMDEV_NR_DEVS 2    /*Éè±¸Êı*/
+#define MEMDEV_NR_DEVS 2    /*è®¾å¤‡æ•°*/
 #endif
 
 #ifndef MEMDEV_SIZE
 #define MEMDEV_SIZE 4096
 #endif
 
-/*memÉè±¸ÃèÊö½á¹¹Ìå*/
-struct mem_dev                                     
-{                                                        
-  char *data;                      
-  unsigned long size; 
-  wait_queue_head_t mem_queue;
+/*memè®¾å¤‡æè¿°ç»“æ„ä½“*/
+struct mem_dev {
+    char *data;
+    unsigned long size;
+    wait_queue_head_t mem_queue;
 };
 
 #endif /* _MEMDEV_H_ */

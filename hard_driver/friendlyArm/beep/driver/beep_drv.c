@@ -1,8 +1,8 @@
 /********************************************************
-ÎÄ¼şËµÃ÷£º
-	·äÃùÆ÷¿ØÖÆÒı½ÅÊÇGPB0,µÍµçÆ½Ê±£¬·äÃùÆ÷Ïì£¬¸ßµçÆ½Ê±£¬Í£Ö¹
-	time£º2018/12/10
-	author£ºdavid
+æ–‡ä»¶è¯´æ˜ï¼š
+	èœ‚é¸£å™¨æ§åˆ¶å¼•è„šæ˜¯GPB0,ä½ç”µå¹³æ—¶ï¼Œèœ‚é¸£å™¨å“ï¼Œé«˜ç”µå¹³æ—¶ï¼Œåœæ­¢
+	timeï¼š2018/12/10
+	authorï¼šdavid
 ********************************************************/
 #include <linux/errno.h>
 #include <linux/kernel.h>
@@ -97,7 +97,7 @@ static int beep_release(struct inode *node, struct file *file)
 
 /*
  * Set up the cdev structure for a device.
- *  ´Ëº¯ÊıµÄ¹¦ÄÜ£º½«devÓëfops°ó¶¨
+ *  æ­¤å‡½æ•°çš„åŠŸèƒ½ï¼šå°†devä¸fopsç»‘å®š
  */
 static void beep_setup_cdev(struct cdev *dev, int minor,
 		struct file_operations *fops)
@@ -130,7 +130,7 @@ static struct file_operations beep_remap_ops = {
 /*
  * There's no need for us to maintain any
  * special housekeeping info, so we just deal with raw cdevs.
- * ¶¨ÒåÁËÒ»¸öcdev½á¹¹
+ * å®šä¹‰äº†ä¸€ä¸ªcdevç»“æ„
  */
 static struct cdev BeepDevs;
 

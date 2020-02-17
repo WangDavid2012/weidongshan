@@ -1,11 +1,11 @@
 /******************************************************************************
-* File£º		beep_ioremap.c
+* Fileï¼š		beep_ioremap.c
 * Author:		Hanson
-* Desc£º	Beep driver with ioremap
+* Descï¼š	Beep driver with ioremap
 * History:	May 16th 2011
 
-ÎÄ¼şËµÃ÷£º
-Í¨¹ıipremap()º¯Êı¿ØÖÆio
+æ–‡ä»¶è¯´æ˜ï¼š
+é€šè¿‡ipremap()å‡½æ•°æ§åˆ¶io
 	time:2018/12/10
 	author:david
 *******************************************************************************/
@@ -32,8 +32,8 @@
 //linux-2.6.32.2/arch/arm/mach-s3c2410/include/mach/regs-gpio.h
 #include <linux/cdev.h>
 
-//ÒÉÎÊ£º³ÌĞòµÄÍ·ÎÄ¼şÖĞ£¬ÒÑ¾­°üº¬ÁËregs-gpio.h,ÀïÃæÓĞGPBCONµÄºê¶¨Òå£¬ÔÚ´ËÎÄ¼şÖĞ£¬ÔÙ´Îºê¶¨Òå£¬ÊÇ²»ÊÇ»á³ö´í
-//¶ÁÈ¡´ËÎÄ¼şµÄÊÕ»ñ£ºreadl(),writel(),ioremap()Èı¸öº¯Êı
+//ç–‘é—®ï¼šç¨‹åºçš„å¤´æ–‡ä»¶ä¸­ï¼Œå·²ç»åŒ…å«äº†regs-gpio.h,é‡Œé¢æœ‰GPBCONçš„å®å®šä¹‰ï¼Œåœ¨æ­¤æ–‡ä»¶ä¸­ï¼Œå†æ¬¡å®å®šä¹‰ï¼Œæ˜¯ä¸æ˜¯ä¼šå‡ºé”™
+//è¯»å–æ­¤æ–‡ä»¶çš„æ”¶è·ï¼šreadl(),writel(),ioremap()ä¸‰ä¸ªå‡½æ•°
 
 
 
@@ -42,7 +42,7 @@
 #define DEVICE_NAME		"beep"
 
 //Port GPBx  Register address declaration
-///> GPB ¿ØÖÆ¼Ä´æÆ÷µÄµØÖ·£¬ioremapº¯ÊıµÄÓÃ·¨
+///> GPB æ§åˆ¶å¯„å­˜å™¨çš„åœ°å€ï¼Œioremapå‡½æ•°çš„ç”¨æ³•
 #define GPBCON (unsigned long)ioremap(0x56000010,4)
 #define GPBDAT (unsigned long)ioremap(0x56000014,4)
 #define GPBUP  (unsigned long)ioremap(0x56000018,4)
@@ -164,7 +164,7 @@ static struct file_operations beep_remap_ops = {
  */
 
 static struct miscdevice misc = {
-	.minor = MISC_DYNAMIC_MINOR, //¶¯Ì¬Éè±¸ºÅ
+	.minor = MISC_DYNAMIC_MINOR, //åŠ¨æ€è®¾å¤‡å·
 	.name = DEVICE_NAME,
 	.fops = &beep_remap_ops,
 };

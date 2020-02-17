@@ -1,11 +1,11 @@
 /*********************************************************************************************
-#####         ÉÏº£Ç¶ÈëÊ½¼ÒÔ°-¿ª·¢°åÉÌ³Ç         #####
+#####         ä¸Šæµ·åµŒå…¥å¼å®¶å›­-å¼€å‘æ¿å•†åŸŽ         #####
 #####                    www.embedclub.com                        #####
 #####             http://embedclub.taobao.com               #####
 
-* File£º	nosem.c
+* Fileï¼š	nosem.c
 * Author:	Hanson
-* Desc£º	simple char device driver, with semaphore
+* Descï¼š	simple char device driver, with semaphore
 * History:	May 16th 2011
 *********************************************************************************************/
 
@@ -36,8 +36,8 @@ static int test_major = 0;
 MODULE_AUTHOR("Hanson He");
 MODULE_LICENSE("Dual BSD/GPL");
 
-#define GLOBALMEM_SIZE	0x1000	/*È«¾ÖÄÚ´æ×î´ó4K×Ö½Ú*/
-unsigned char mem[GLOBALMEM_SIZE]; /*È«¾ÖÄÚ´æ*/
+#define GLOBALMEM_SIZE	0x1000	/*å…¨å±€å†…å­˜æœ€å¤§4Kå­—èŠ‚*/
+unsigned char mem[GLOBALMEM_SIZE]; /*å…¨å±€å†…å­˜*/
 
 /*
  * Open the device; in fact, there's nothing to do here.
@@ -59,7 +59,7 @@ ssize_t test_write(struct file *file, const char __user *buff, size_t count, lof
 	unsigned long p =  *offp;
 	int ret = 0;
 
-	/*·ÖÎöºÍ»ñÈ¡ÓÐÐ§µÄÐ´³¤¶È*/
+	/*åˆ†æžå’ŒèŽ·å–æœ‰æ•ˆçš„å†™é•¿åº¦*/
 	if (p >= GLOBALMEM_SIZE)
 		return count ?  - ENXIO: 0;
 	if (count > GLOBALMEM_SIZE - p)
@@ -70,7 +70,7 @@ ssize_t test_write(struct file *file, const char __user *buff, size_t count, lof
 		return -ERESTARTSYS;
 	}
 
-	/*ÓÃ»§¿Õ¼ä->ÄÚºË¿Õ¼ä*/
+	/*ç”¨æˆ·ç©ºé—´->å†…æ ¸ç©ºé—´*/
 	  if (copy_from_user(mem + p, buff, count))
 	    ret =  - EFAULT;
 	  else

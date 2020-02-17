@@ -1,11 +1,11 @@
 /*********************************************************************************************
-#####         ÉÏº£Ç¶ÈëÊ½¼ÒÔ°-¿ª·¢°åÉÌ³Ç         #####
+#####         ä¸Šæµ·åµŒå…¥å¼å®¶å›­-å¼€å‘æ¿å•†åŸ         #####
 #####                             www.embedclub.com                              #####
 #####                      http://embedclub.taobao.com                      #####
 
-* File£º		memdev.c
+* Fileï¼š		memdev.c
 * Author:		Hanson
-* Desc£º	virual memory  device driver 
+* Descï¼š	virual memory  device driver 
 * History:	May 20th 2011
 *********************************************************************************************/
 #include <linux/module.h>
@@ -27,49 +27,49 @@ static mem_major = MEMDEV_MAJOR;
 
 module_param(mem_major, int, S_IRUGO);
 
-struct mem_dev *mem_devp; /*Éè±¸½á¹¹ÌåÖ¸Õë*/
+struct mem_dev *mem_devp; /*è®¾å¤‡ç»“æ„ä½“æŒ‡é’ˆ*/
 
 struct cdev cdev; 
 
-/*ÎÄ¼ş´ò¿ªº¯Êı*/
+/*æ–‡ä»¶æ‰“å¼€å‡½æ•°*/
 int mem_open(struct inode *inode, struct file *filp)
 {
     struct mem_dev *dev;
     
-    /*»ñÈ¡´ÎÉè±¸ºÅ*/
+    /*è·å–æ¬¡è®¾å¤‡å·*/
     int num = MINOR(inode->i_rdev);
 
     if (num >= MEMDEV_NR_DEVS) 
             return -ENODEV;
     dev = &mem_devp[num];
     
-    /*½«Éè±¸ÃèÊö½á¹¹Ö¸Õë¸³Öµ¸øÎÄ¼şË½ÓĞÊı¾İÖ¸Õë*/
+    /*å°†è®¾å¤‡æè¿°ç»“æ„æŒ‡é’ˆèµ‹å€¼ç»™æ–‡ä»¶ç§æœ‰æ•°æ®æŒ‡é’ˆ*/
     filp->private_data = dev;
     
     return 0; 
 }
 
-/*ÎÄ¼şÊÍ·Åº¯Êı*/
+/*æ–‡ä»¶é‡Šæ”¾å‡½æ•°*/
 int mem_release(struct inode *inode, struct file *filp)
 {
   return 0;
 }
 
-/*¶Áº¯Êı*/
+/*è¯»å‡½æ•°*/
 static ssize_t mem_read(struct file *filp, char __user *buf, size_t size, loff_t *ppos)
 {
   unsigned long p =  *ppos;
   unsigned int count = size;
   int ret = 0;
-  struct mem_dev *dev = filp->private_data; /*»ñµÃÉè±¸½á¹¹ÌåÖ¸Õë*/
+  struct mem_dev *dev = filp->private_data; /*è·å¾—è®¾å¤‡ç»“æ„ä½“æŒ‡é’ˆ*/
 
-  /*ÅĞ¶Ï¶ÁÎ»ÖÃÊÇ·ñÓĞĞ§*/
+  /*åˆ¤æ–­è¯»ä½ç½®æ˜¯å¦æœ‰æ•ˆ*/
   if (p >= MEMDEV_SIZE)
     return 0;
   if (count > MEMDEV_SIZE - p)
     count = MEMDEV_SIZE - p;
 
-  /*¶ÁÊı¾İµ½ÓÃ»§¿Õ¼ä*/
+  /*è¯»æ•°æ®åˆ°ç”¨æˆ·ç©ºé—´*/
   if (copy_to_user(buf, (void*)(dev->data + p), count))
   {
     ret =  - EFAULT;
@@ -85,21 +85,21 @@ static ssize_t mem_read(struct file *filp, char __user *buf, size_t size, loff_t
   return ret;
 }
 
-/*Ğ´º¯Êı*/
+/*å†™å‡½æ•°*/
 static ssize_t mem_write(struct file *filp, const char __user *buf, size_t size, loff_t *ppos)
 {
   unsigned long p =  *ppos;
   unsigned int count = size;
   int ret = 0;
-  struct mem_dev *dev = filp->private_data; /*»ñµÃÉè±¸½á¹¹ÌåÖ¸Õë*/
+  struct mem_dev *dev = filp->private_data; /*è·å¾—è®¾å¤‡ç»“æ„ä½“æŒ‡é’ˆ*/
   
-  /*·ÖÎöºÍ»ñÈ¡ÓĞĞ§µÄĞ´³¤¶È*/
+  /*åˆ†æå’Œè·å–æœ‰æ•ˆçš„å†™é•¿åº¦*/
   if (p >= MEMDEV_SIZE)
     return 0;
   if (count > MEMDEV_SIZE - p)
     count = MEMDEV_SIZE - p;
     
-  /*´ÓÓÃ»§¿Õ¼äĞ´ÈëÊı¾İ*/
+  /*ä»ç”¨æˆ·ç©ºé—´å†™å…¥æ•°æ®*/
   if (copy_from_user(dev->data + p, buf, count))
     ret =  - EFAULT;
   else
@@ -113,7 +113,7 @@ static ssize_t mem_write(struct file *filp, const char __user *buf, size_t size,
   return ret;
 }
 
-/* seekÎÄ¼ş¶¨Î»º¯Êı */
+/* seekæ–‡ä»¶å®šä½å‡½æ•° */
 static loff_t mem_llseek(struct file *filp, loff_t offset, int whence)
 { 
     loff_t newpos;
@@ -142,7 +142,7 @@ static loff_t mem_llseek(struct file *filp, loff_t offset, int whence)
 
 }
 
-/*ÎÄ¼ş²Ù×÷½á¹¹Ìå*/
+/*æ–‡ä»¶æ“ä½œç»“æ„ä½“*/
 static const struct file_operations mem_fops =
 {
   .owner = THIS_MODULE,
@@ -153,7 +153,7 @@ static const struct file_operations mem_fops =
   .release = mem_release,
 };
 
-/*Éè±¸Çı¶¯Ä£¿é¼ÓÔØº¯Êı*/
+/*è®¾å¤‡é©±åŠ¨æ¨¡å—åŠ è½½å‡½æ•°*/
 static int memdev_init(void)
 {
   int result;
@@ -161,10 +161,10 @@ static int memdev_init(void)
 
   dev_t devno = MKDEV(mem_major, 0);
 
-  /* ¾²Ì¬ÉêÇëÉè±¸ºÅ*/
+  /* é™æ€ç”³è¯·è®¾å¤‡å·*/
   if (mem_major)
     result = register_chrdev_region(devno, MEMDEV_NR_DEVS, "memdev");
-  else  /* ¶¯Ì¬·ÖÅäÉè±¸ºÅ */
+  else  /* åŠ¨æ€åˆ†é…è®¾å¤‡å· */
   {
     result = alloc_chrdev_region(&devno, 0, MEMDEV_NR_DEVS, "memdev");
     mem_major = MAJOR(devno);
@@ -173,24 +173,24 @@ static int memdev_init(void)
   if (result < 0)
     return result;
 
-  /*³õÊ¼»¯cdev½á¹¹*/
+  /*åˆå§‹åŒ–cdevç»“æ„*/
   cdev_init(&cdev, &mem_fops);
   cdev.owner = THIS_MODULE;
   cdev.ops = &mem_fops;
   
-  /* ×¢²á×Ö·ûÉè±¸ */
+  /* æ³¨å†Œå­—ç¬¦è®¾å¤‡ */
   cdev_add(&cdev, MKDEV(mem_major, 0), MEMDEV_NR_DEVS);
    
-  /* ÎªÉè±¸ÃèÊö½á¹¹·ÖÅäÄÚ´æ*/
+  /* ä¸ºè®¾å¤‡æè¿°ç»“æ„åˆ†é…å†…å­˜*/
   mem_devp = kmalloc(MEMDEV_NR_DEVS * sizeof(struct mem_dev), GFP_KERNEL);
-  if (!mem_devp)    /*ÉêÇëÊ§°Ü*/
+  if (!mem_devp)    /*ç”³è¯·å¤±è´¥*/
   {
     result =  - ENOMEM;
     goto fail_malloc;
   }
   memset(mem_devp, 0, sizeof(struct mem_dev));
   
-  /*ÎªÉè±¸·ÖÅäÄÚ´æ*/
+  /*ä¸ºè®¾å¤‡åˆ†é…å†…å­˜*/
   for (i=0; i < MEMDEV_NR_DEVS; i++) 
   {
         mem_devp[i].size = MEMDEV_SIZE;
@@ -207,16 +207,16 @@ static int memdev_init(void)
   return result;
 }
 
-/*Ä£¿éĞ¶ÔØº¯Êı*/
+/*æ¨¡å—å¸è½½å‡½æ•°*/
 static void memdev_exit(void)
 {
   int i;
-  cdev_del(&cdev);   /*×¢ÏúÉè±¸*/
+  cdev_del(&cdev);   /*æ³¨é”€è®¾å¤‡*/
   for (i=0; i < MEMDEV_NR_DEVS; i++) 
   	kfree(mem_devp[i].data);
   	
-  kfree(mem_devp);     /*ÊÍ·ÅÉè±¸½á¹¹ÌåÄÚ´æ*/
-  unregister_chrdev_region(MKDEV(mem_major, 0), 2); /*ÊÍ·ÅÉè±¸ºÅ*/
+  kfree(mem_devp);     /*é‡Šæ”¾è®¾å¤‡ç»“æ„ä½“å†…å­˜*/
+  unregister_chrdev_region(MKDEV(mem_major, 0), 2); /*é‡Šæ”¾è®¾å¤‡å·*/
   printk("memdev driver uninstalled\n");
 }
 

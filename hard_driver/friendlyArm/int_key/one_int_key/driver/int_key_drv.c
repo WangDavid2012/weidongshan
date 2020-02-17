@@ -1,11 +1,11 @@
 /*********************************************************************************************
-#####         ÉÏº£Ç¶ÈëÊ½¼ÒÔ°-¿ª·¢°åÉÌ³Ç         #####
+#####         ä¸Šæµ·åµŒå…¥å¼å®¶å›­-å¼€å‘æ¿å•†åŸ         #####
 #####                    www.embedclub.com                        #####
 #####             http://embedclub.taobao.com               #####
 
-* File£º		int_key_drv.c
+* Fileï¼š		int_key_drv.c
 * Author:		Hanson
-* Desc£º	one key scan device driver 
+* Descï¼š	one key scan device driver
 * History:	May 16th 2011
 *********************************************************************************************/
 
@@ -33,28 +33,28 @@
 static int key_major = 0;
 
 struct key_irq_desc {
-    	unsigned int irq;
-	int pin;
-	int pin_setting;
-	int number;
-    	char *name;	
+    unsigned int irq;
+    int pin;
+    int pin_setting;
+    int number;
+    char *name;
 };
 
-/* ÓÃÀ´Ö¸¶¨°´¼üËùÓÃµÄÍâ²¿ÖĞ¶ÏÒı½Å¼°ÖĞ¶Ï´¥·¢·½Ê½, Ãû×Ö */
+/* ç”¨æ¥æŒ‡å®šæŒ‰é”®æ‰€ç”¨çš„å¤–éƒ¨ä¸­æ–­å¼•è„šåŠä¸­æ–­è§¦å‘æ–¹å¼, åå­— */
 static struct key_irq_desc key_irqs [] = {
     {IRQ_EINT8, S3C2410_GPG(0), S3C2410_GPG0_EINT8, 0, "KEY1"}, /* K1 */
 };
 
-/* °´¼ü±»°´ÏÂµÄ´ÎÊı(×¼È·µØËµ£¬ÊÇ·¢ÉúÖĞ¶ÏµÄ´ÎÊı) */
+/* æŒ‰é”®è¢«æŒ‰ä¸‹çš„æ¬¡æ•°(å‡†ç¡®åœ°è¯´ï¼Œæ˜¯å‘ç”Ÿä¸­æ–­çš„æ¬¡æ•°) */
 static volatile int key_values[] = {0};
 
-/* µÈ´ı¶ÓÁĞ: 
- * µ±Ã»ÓĞ°´¼ü±»°´ÏÂÊ±£¬Èç¹ûÓĞ½ø³Ìµ÷ÓÃkey_readº¯Êı£¬
- * Ëü½«ĞİÃß
+/* ç­‰å¾…é˜Ÿåˆ—:
+ * å½“æ²¡æœ‰æŒ‰é”®è¢«æŒ‰ä¸‹æ—¶ï¼Œå¦‚æœæœ‰è¿›ç¨‹è°ƒç”¨key_readå‡½æ•°ï¼Œ
+ * å®ƒå°†ä¼‘çœ 
  */
-static DECLARE_WAIT_QUEUE_HEAD(key_waitq); //³õÊ¼»¯Ò»¸öµÈ´ı¶ÓÁĞÍ·key_waitq
+static DECLARE_WAIT_QUEUE_HEAD(key_waitq); //åˆå§‹åŒ–ä¸€ä¸ªç­‰å¾…é˜Ÿåˆ—å¤´key_waitq
 
-/* ÖĞ¶ÏÊÂ¼ş±êÖ¾, ÖĞ¶Ï·şÎñ³ÌĞò½«ËüÖÃ1£¬key_read½«ËüÇå0 */
+/* ä¸­æ–­äº‹ä»¶æ ‡å¿—, ä¸­æ–­æœåŠ¡ç¨‹åºå°†å®ƒç½®1ï¼Œkey_readå°†å®ƒæ¸…0 */
 static volatile int ev_press = 0;
 #ifdef USING_TASKLET
 
@@ -64,74 +64,74 @@ static void key_do_tasklet(unsigned long);
 
 static void key_do_tasklet(unsigned long data)
 {
-	printk("key_do_tasklet\n");
+    printk("key_do_tasklet\n");
 }
 #endif
 
 static irqreturn_t key_interrupt(int irq, void *dev_id)
 {
-	struct key_irq_desc *key_irqs = (struct key_irq_desc *)dev_id;
-    	int up = s3c2410_gpio_getpin(key_irqs->pin);//arch/arm/plat-s3c24xx/gpio.c
+    struct key_irq_desc *key_irqs = (struct key_irq_desc *)dev_id;
+    int up = s3c2410_gpio_getpin(key_irqs->pin);//arch/arm/plat-s3c24xx/gpio.c
 
-	printk("<1>up=%d\n",up);
-	if (up)
-		key_values[key_irqs->number] = (key_irqs->number + 1) + 0x80;
-	else
-		key_values[key_irqs->number] += 1;
-	
-    	ev_press = 1;                  /* ±íÊ¾ÖĞ¶Ï·¢ÉúÁË */
-    	wake_up_interruptible(&key_waitq);   /* »½ĞÑĞİÃßµÄ½ø³Ì */
-	
+    printk("<1>up=%d\n",up);
+    if (up)
+        key_values[key_irqs->number] = (key_irqs->number + 1) + 0x80;
+    else
+        key_values[key_irqs->number] += 1;
+
+    ev_press = 1;                  /* è¡¨ç¤ºä¸­æ–­å‘ç”Ÿäº† */
+    wake_up_interruptible(&key_waitq);   /* å”¤é†’ä¼‘çœ çš„è¿›ç¨‹ */
+
 #ifdef USING_TASKLET
-	tasklet_schedule(&key_tasklet);
+    tasklet_schedule(&key_tasklet);
 #endif
-    
-    	return IRQ_RETVAL(IRQ_HANDLED);
+
+    return IRQ_RETVAL(IRQ_HANDLED);
 }
 
 
-/* Ó¦ÓÃ³ÌĞò¶ÔÉè±¸ÎÄ¼ş/dev/keyÖ´ĞĞopen(...)Ê±£¬
- * ¾Í»áµ÷ÓÃkey_openº¯Êı
+/* åº”ç”¨ç¨‹åºå¯¹è®¾å¤‡æ–‡ä»¶/dev/keyæ‰§è¡Œopen(...)æ—¶ï¼Œ
+ * å°±ä¼šè°ƒç”¨key_openå‡½æ•°
  */
 static int key_open(struct inode *inode, struct file *file)
 {
     int i;
     int err;
-    
+
     for (i = 0; i < sizeof(key_irqs)/sizeof(key_irqs[0]); i++) {
-        // ×¢²áÖĞ¶Ï´¦Àíº¯Êı
-	s3c2410_gpio_cfgpin(key_irqs[i].pin,key_irqs[i].pin_setting);
-        err = request_irq(key_irqs[i].irq, key_interrupt, 0, 
+        // æ³¨å†Œä¸­æ–­å¤„ç†å‡½æ•°
+        s3c2410_gpio_cfgpin(key_irqs[i].pin,key_irqs[i].pin_setting);
+        err = request_irq(key_irqs[i].irq, key_interrupt, 0,
                           key_irqs[i].name, (void *)&key_irqs[i]);
-	set_irq_type(key_irqs[i].irq, IRQ_TYPE_EDGE_RISING);//<linux/irq.h>
+        set_irq_type(key_irqs[i].irq, IRQ_TYPE_EDGE_RISING);//<linux/irq.h>
         if (err)
             break;
     }
 
     if (err) {
-        // ÊÍ·ÅÒÑ¾­×¢²áµÄÖĞ¶Ï
+        // é‡Šæ”¾å·²ç»æ³¨å†Œçš„ä¸­æ–­
         i--;
         for (; i >= 0; i--) {
-		disable_irq(key_irqs[i].irq);
-            	free_irq(key_irqs[i].irq, (void *)&key_irqs[i]);
+            disable_irq(key_irqs[i].irq);
+            free_irq(key_irqs[i].irq, (void *)&key_irqs[i]);
         }
         return -EBUSY;
     }
-    
+
     return 0;
 }
 
 
-/* Ó¦ÓÃ³ÌĞò¶ÔÉè±¸ÎÄ¼ş/dev/keyÖ´ĞĞclose(...)Ê±£¬
- * ¾Í»áµ÷ÓÃkey_closeº¯Êı
+/* åº”ç”¨ç¨‹åºå¯¹è®¾å¤‡æ–‡ä»¶/dev/keyæ‰§è¡Œclose(...)æ—¶ï¼Œ
+ * å°±ä¼šè°ƒç”¨key_closeå‡½æ•°
  */
 static int key_close(struct inode *inode, struct file *file)
 {
     int i;
-    
+
     for (i = 0; i < sizeof(key_irqs)/sizeof(key_irqs[0]); i++) {
-        // ÊÍ·ÅÒÑ¾­×¢²áµÄÖĞ¶Ï
-	disable_irq(key_irqs[i].irq);
+        // é‡Šæ”¾å·²ç»æ³¨å†Œçš„ä¸­æ–­
+        disable_irq(key_irqs[i].irq);
         free_irq(key_irqs[i].irq, (void *)&key_irqs[i]);
     }
 
@@ -139,26 +139,26 @@ static int key_close(struct inode *inode, struct file *file)
 }
 
 
-/* Ó¦ÓÃ³ÌĞò¶ÔÉè±¸ÎÄ¼ş/dev/keyÖ´ĞĞread(...)Ê±£¬
- * ¾Í»áµ÷ÓÃkey_readº¯Êı
+/* åº”ç”¨ç¨‹åºå¯¹è®¾å¤‡æ–‡ä»¶/dev/keyæ‰§è¡Œread(...)æ—¶ï¼Œ
+ * å°±ä¼šè°ƒç”¨key_readå‡½æ•°
  */
-static int key_read(struct file *filp, char __user *buff, 
-                        size_t count, loff_t *offp)
+static int key_read(struct file *filp, char __user *buff,
+                    size_t count, loff_t *offp)
 {
     unsigned long err;
 
-	if (!ev_press) {
-		if (filp->f_flags & O_NONBLOCK)
-			return -EAGAIN;
-		else
-			/* Èç¹ûev_pressµÈÓÚ0£¬ĞİÃß,Ö±µ½key_waitq±»»½ĞÑ,²¢ÇÒev_pressÎªÕæ*/
-			wait_event_interruptible(key_waitq, ev_press);
-	}
-    
-    /* Ö´ĞĞµ½ÕâÀïÊ±£¬ev_pressµÈÓÚ1£¬½«ËüÇå0 */
+    if (!ev_press) {
+        if (filp->f_flags & O_NONBLOCK)
+            return -EAGAIN;
+        else
+            /* å¦‚æœev_pressç­‰äº0ï¼Œä¼‘çœ ,ç›´åˆ°key_waitqè¢«å”¤é†’,å¹¶ä¸”ev_pressä¸ºçœŸ*/
+            wait_event_interruptible(key_waitq, ev_press);
+    }
+
+    /* æ‰§è¡Œåˆ°è¿™é‡Œæ—¶ï¼Œev_pressç­‰äº1ï¼Œå°†å®ƒæ¸…0 */
     ev_press = 0;
 
-    /* ½«°´¼ü×´Ì¬¸´ÖÆ¸øÓÃ»§£¬²¢Çå0 */
+    /* å°†æŒ‰é”®çŠ¶æ€å¤åˆ¶ç»™ç”¨æˆ·ï¼Œå¹¶æ¸…0 */
     err = copy_to_user(buff, (const void *)key_values, min(sizeof(key_values), count));
     memset((void *)key_values, 0, sizeof(key_values));
 
@@ -166,29 +166,29 @@ static int key_read(struct file *filp, char __user *buff,
 }
 
 /**************************************************
-* µ±ÓÃ»§³ÌĞòµ÷ÓÃselectº¯ÊıÊ±£¬±¾º¯Êı±»µ÷ÓÃ
-* Èç¹ûÓĞ°´¼üÊı¾İ£¬Ôòselectº¯Êı»áÁ¢¿Ì·µ»Ø
-* Èç¹ûÃ»ÓĞ°´¼üÊı¾İ£¬±¾º¯ÊıÊ¹ÓÃpoll_waitµÈ´ı
+* å½“ç”¨æˆ·ç¨‹åºè°ƒç”¨selectå‡½æ•°æ—¶ï¼Œæœ¬å‡½æ•°è¢«è°ƒç”¨
+* å¦‚æœæœ‰æŒ‰é”®æ•°æ®ï¼Œåˆ™selectå‡½æ•°ä¼šç«‹åˆ»è¿”å›
+* å¦‚æœæ²¡æœ‰æŒ‰é”®æ•°æ®ï¼Œæœ¬å‡½æ•°ä½¿ç”¨poll_waitç­‰å¾…
 **************************************************/
 static unsigned int key_poll(struct file *file,
-        			 struct poll_table_struct *wait)
+                             struct poll_table_struct *wait)
 {
-	unsigned int mask = 0;
-    	poll_wait(file, &key_waitq, wait);
-    	if (ev_press)
-        	mask |= POLLIN | POLLRDNORM;
-    	return mask;
+    unsigned int mask = 0;
+    poll_wait(file, &key_waitq, wait);
+    if (ev_press)
+        mask |= POLLIN | POLLRDNORM;
+    return mask;
 }
 
 
-/* Õâ¸ö½á¹¹ÊÇ×Ö·ûÉè±¸Çı¶¯³ÌĞòµÄºËĞÄ
- * µ±Ó¦ÓÃ³ÌĞò²Ù×÷Éè±¸ÎÄ¼şÊ±Ëùµ÷ÓÃµÄopen¡¢read¡¢writeµÈº¯Êı£¬
- * ×îÖÕ»áµ÷ÓÃÕâ¸ö½á¹¹ÖĞµÄ¶ÔÓ¦º¯Êı
+/* è¿™ä¸ªç»“æ„æ˜¯å­—ç¬¦è®¾å¤‡é©±åŠ¨ç¨‹åºçš„æ ¸å¿ƒ
+ * å½“åº”ç”¨ç¨‹åºæ“ä½œè®¾å¤‡æ–‡ä»¶æ—¶æ‰€è°ƒç”¨çš„openã€readã€writeç­‰å‡½æ•°ï¼Œ
+ * æœ€ç»ˆä¼šè°ƒç”¨è¿™ä¸ªç»“æ„ä¸­çš„å¯¹åº”å‡½æ•°
  */
 static struct file_operations key_fops = {
-    .owner   =   THIS_MODULE,    /* ÕâÊÇÒ»¸öºê£¬Ö¸Ïò±àÒëÄ£¿éÊ±×Ô¶¯´´½¨µÄ__this_module±äÁ¿ */
+    .owner   =   THIS_MODULE,    /* è¿™æ˜¯ä¸€ä¸ªå®ï¼ŒæŒ‡å‘ç¼–è¯‘æ¨¡å—æ—¶è‡ªåŠ¨åˆ›å»ºçš„__this_moduleå˜é‡ */
     .open    =   key_open,
-    .release =   key_close, 
+    .release =   key_close,
     .read    =   key_read,
     .poll    =   key_poll,
 };
@@ -198,17 +198,17 @@ static struct file_operations key_fops = {
  * Set up the cdev structure for a device.
  */
 static void key_setup_cdev(struct cdev *dev, int minor,
-                struct file_operations *fops)
+                           struct file_operations *fops)
 {
-        int err, devno = MKDEV(key_major, minor);
+    int err, devno = MKDEV(key_major, minor);
 
-        cdev_init(dev, fops);
-        dev->owner = THIS_MODULE;
-        dev->ops = fops;
-        err = cdev_add (dev, devno, 1);
-        /* Fail gracefully if need be */
-        if (err)
-                printk (KERN_NOTICE "Error %d adding key%d", err, minor);
+    cdev_init(dev, fops);
+    dev->owner = THIS_MODULE;
+    dev->ops = fops;
+    err = cdev_add (dev, devno, 1);
+    /* Fail gracefully if need be */
+    if (err)
+        printk (KERN_NOTICE "Error %d adding key%d", err, minor);
 }
 
 
@@ -220,58 +220,58 @@ static struct cdev key_cdev;
 
 
 /*
- * Ö´ĞĞ¡°insmod key_drv.ko¡±ÃüÁîÊ±¾Í»áµ÷ÓÃÕâ¸öº¯Êı
+ * æ‰§è¡Œâ€œinsmod key_drv.koâ€å‘½ä»¤æ—¶å°±ä¼šè°ƒç”¨è¿™ä¸ªå‡½æ•°
  */
 static int __init userkey_init(void)
 //static int key_init(void)
 {
-        int result;
-        dev_t dev = MKDEV(key_major, 0);
-                                                                                                         
-        /* Figure out our device number. */
-        if (key_major)
-                result = register_chrdev_region(dev, 1, "key");
-        else {
-                result = alloc_chrdev_region(&dev, 0, 1, "key");
-                key_major = MAJOR(dev);
-        }
-        if (result < 0) {
-                printk(KERN_WARNING "key: unable to get major %d\n", key_major);
-                return result;
-        }
-        if (key_major == 0)
-                key_major = result;
+    int result;
+    dev_t dev = MKDEV(key_major, 0);
+
+    /* Figure out our device number. */
+    if (key_major)
+        result = register_chrdev_region(dev, 1, "key");
+    else {
+        result = alloc_chrdev_region(&dev, 0, 1, "key");
+        key_major = MAJOR(dev);
+    }
+    if (result < 0) {
+        printk(KERN_WARNING "key: unable to get major %d\n", key_major);
+        return result;
+    }
+    if (key_major == 0)
+        key_major = result;
 
 #ifdef USING_TASKLET
-	tasklet_init(&key_tasklet, key_do_tasklet, 0);
-#endif                                                                                                         
-        /* Now set up cdev. */
-        key_setup_cdev(&key_cdev, 0, &key_fops);
-        printk("key device installed, with major %d\n", key_major);
- 
+    tasklet_init(&key_tasklet, key_do_tasklet, 0);
+#endif
+    /* Now set up cdev. */
+    key_setup_cdev(&key_cdev, 0, &key_fops);
+    printk("key device installed, with major %d\n", key_major);
+
     return 0;
 }
 
 /*
- * Ö´ĞĞ¡rrmod key_drv¡±ÃüÁîÊ±¾Í»áµ÷ÓÃÕâ¸öº¯Êı 
+ * æ‰§è¡Œî“¸rmod key_drvâ€å‘½ä»¤æ—¶å°±ä¼šè°ƒç”¨è¿™ä¸ªå‡½æ•°
  */
 static void __exit userkey_exit(void)
 //static void key_exit(void)
 {
-        cdev_del(&key_cdev);
-        unregister_chrdev_region(MKDEV(key_major, 0), 1);
+    cdev_del(&key_cdev);
+    unregister_chrdev_region(MKDEV(key_major, 0), 1);
 #ifdef USING_TASKLET
-	tasklet_kill(&key_tasklet);
+    tasklet_kill(&key_tasklet);
 #endif
-        printk("key device uninstalled\n");
+    printk("key device uninstalled\n");
 }
 
-/* ÕâÁ½ĞĞÖ¸¶¨Çı¶¯³ÌĞòµÄ³õÊ¼»¯º¯ÊıºÍĞ¶ÔØº¯Êı */
+/* è¿™ä¸¤è¡ŒæŒ‡å®šé©±åŠ¨ç¨‹åºçš„åˆå§‹åŒ–å‡½æ•°å’Œå¸è½½å‡½æ•° */
 module_init(userkey_init);
 module_exit(userkey_exit);
 
-/* ÃèÊöÇı¶¯³ÌĞòµÄÒ»Ğ©ĞÅÏ¢£¬²»ÊÇ±ØĞëµÄ */
-MODULE_AUTHOR("Hanson He");             // Çı¶¯³ÌĞòµÄ×÷Õß
-MODULE_DESCRIPTION("S3C2410/S3C2440 KEY Driver");   // Ò»Ğ©ÃèÊöĞÅÏ¢
-MODULE_LICENSE("Dual BSD/GPL");                              // ×ñÑ­µÄĞ­Òé
+/* æè¿°é©±åŠ¨ç¨‹åºçš„ä¸€äº›ä¿¡æ¯ï¼Œä¸æ˜¯å¿…é¡»çš„ */
+MODULE_AUTHOR("Hanson He");             // é©±åŠ¨ç¨‹åºçš„ä½œè€…
+MODULE_DESCRIPTION("S3C2410/S3C2440 KEY Driver");   // ä¸€äº›æè¿°ä¿¡æ¯
+MODULE_LICENSE("Dual BSD/GPL");                              // éµå¾ªçš„åè®®
 

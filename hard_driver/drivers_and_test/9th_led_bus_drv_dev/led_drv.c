@@ -77,15 +77,10 @@ static int led_probe(struct platform_device *pdev)
 
 	res = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
 	pin = res->start;
-
 	/* 注册字符设备驱动程序 */
-
 	printk("led_probe, found led\n");
-
 	major = register_chrdev(0, "myled", &led_fops);
-
 	cls = class_create(THIS_MODULE, "myled");
-
 	class_device_create(cls, NULL, MKDEV(major, 0), NULL, "led"); /* /dev/led */
 	
 	return 0;

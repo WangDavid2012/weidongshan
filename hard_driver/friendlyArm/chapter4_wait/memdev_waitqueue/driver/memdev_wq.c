@@ -1,11 +1,11 @@
 /*********************************************************************************************
-#####         ÉÏº£Ç¶ÈëÊ½¼ÒÔ°-¿ª·¢°åÉÌ³Ç         #####
+#####         ä¸Šæµ·åµŒå…¥å¼å®¶å›­-å¼€å‘æ¿å•†åŸ         #####
 #####                    www.embedclub.com                        #####
 #####             http://embedclub.taobao.com               #####
 
-* File£º		memdev_poll_wq.c
+* Fileï¼š		memdev_poll_wq.c
 * Author:		Hanson
-* Desc£º	Simple char device driver, with wait queue
+* Descï¼š	Simple char device driver, with wait queue
 * History:	May 16th 2011
 *********************************************************************************************/
 
@@ -29,208 +29,199 @@ static mem_major = MEMDEV_MAJOR;
 
 module_param(mem_major, int, S_IRUGO);
 
-struct mem_dev *mem_devp; /*Éè±¸½á¹¹ÌåÖ¸Õë*/
+struct mem_dev *mem_devp; /*è®¾å¤‡ç»“æ„ä½“æŒ‡é’ˆ*/
 
-struct cdev cdev; 
+struct cdev cdev;
 
-bool have_data = false; // ÅĞ¶ÏÉè±¸ÊÇ·ñÓĞÊı¾İ¿É¶ÁÈ¡±êÖ¾
+bool have_data = false; // åˆ¤æ–­è®¾å¤‡æ˜¯å¦æœ‰æ•°æ®å¯è¯»å–æ ‡å¿—
 
-/*ÎÄ¼ş´ò¿ªº¯Êı*/
+/*æ–‡ä»¶æ‰“å¼€å‡½æ•°*/
 int mem_open(struct inode *inode, struct file *filp)
 {
     struct mem_dev *dev;
-    
-    /*»ñÈ¡´ÎÉè±¸ºÅ*/
+
+    /*è·å–æ¬¡è®¾å¤‡å·*/
     int num = MINOR(inode->i_rdev);
 
-    if (num >= MEMDEV_NR_DEVS) 
-            return -ENODEV;
+    if (num >= MEMDEV_NR_DEVS)
+        return -ENODEV;
     dev = &mem_devp[num];
-    
-    /*½«Éè±¸ÃèÊö½á¹¹Ö¸Õë¸³Öµ¸øÎÄ¼şË½ÓĞÊı¾İÖ¸Õë*/
+
+    /*å°†è®¾å¤‡æè¿°ç»“æ„æŒ‡é’ˆèµ‹å€¼ç»™æ–‡ä»¶ç§æœ‰æ•°æ®æŒ‡é’ˆ*/
     filp->private_data = dev;
-    
-    return 0; 
+
+    return 0;
 }
 
-/*ÎÄ¼şÊÍ·Åº¯Êı*/
+/*æ–‡ä»¶é‡Šæ”¾å‡½æ•°*/
 int mem_release(struct inode *inode, struct file *filp)
 {
-  return 0;
+    return 0;
 }
 
-/*¶Áº¯Êı*/
+/*è¯»å‡½æ•°*/
 static ssize_t mem_read(struct file *filp, char __user *buf, size_t size, loff_t *ppos)
 {
-  unsigned long p =  *ppos;
-  unsigned int count = size;
-  int ret = 0;
-  struct mem_dev *dev = filp->private_data; /*»ñµÃÉè±¸½á¹¹ÌåÖ¸Õë*/
+    unsigned long p =  *ppos;
+    unsigned int count = size;
+    int ret = 0;
+    struct mem_dev *dev = filp->private_data; /*è·å¾—è®¾å¤‡ç»“æ„ä½“æŒ‡é’ˆ*/
 
-  /*ÅĞ¶Ï¶ÁÎ»ÖÃÊÇ·ñÓĞĞ§*/
-  if (p >= MEMDEV_SIZE)
-    return 0;
-  if (count > MEMDEV_SIZE - p)
-    count = MEMDEV_SIZE - p;
+    /*åˆ¤æ–­è¯»ä½ç½®æ˜¯å¦æœ‰æ•ˆ*/
+    if (p >= MEMDEV_SIZE)
+        return 0;
+    if (count > MEMDEV_SIZE - p)
+        count = MEMDEV_SIZE - p;
 
-  while (!have_data) /*Ã»ÓĞÊı¾İ¿É¶Á£¬¿¼ÂÇÎªÊ²Ã´²»ÓÃif£¬¶øÓÃwhile*/
-  {
- 	if (filp->f_flags & O_NONBLOCK)
-		return -EAGAIN;
-	wait_event_interruptible(dev->mem_queue, have_data);
-  }
+    while (!have_data) { /*æ²¡æœ‰æ•°æ®å¯è¯»ï¼Œè€ƒè™‘ä¸ºä»€ä¹ˆä¸ç”¨ifï¼Œè€Œç”¨while*/
+        if (filp->f_flags & O_NONBLOCK)
+            return -EAGAIN;
+        wait_event_interruptible(dev->mem_queue, have_data);
+    }
 
-  /*¶ÁÊı¾İµ½ÓÃ»§¿Õ¼ä*/
-  if (copy_to_user(buf, (void*)(dev->data + p), count))
-  {
-    ret =  - EFAULT;
-  }
-  else
-  {
-    *ppos += count;
-    ret = count;
-    
-    printk(KERN_INFO "read %d bytes(s) from %d\n", count, p);
-  }
+    /*è¯»æ•°æ®åˆ°ç”¨æˆ·ç©ºé—´*/
+    if (copy_to_user(buf, (void*)(dev->data + p), count)) {
+        ret =  - EFAULT;
+    } else {
+        *ppos += count;
+        ret = count;
 
-  have_data = false; /*±êÃ÷²»ÔÙÓĞÊı¾İ¿É¶Á*/
- 
-  return ret;
+        printk(KERN_INFO "read %d bytes(s) from %d\n", count, p);
+    }
+
+    have_data = false; /*æ ‡æ˜ä¸å†æœ‰æ•°æ®å¯è¯»*/
+
+    return ret;
 }
 
-/*Ğ´º¯Êı*/
+/*å†™å‡½æ•°*/
 static ssize_t mem_write(struct file *filp, const char __user *buf, size_t size, loff_t *ppos)
 {
-  unsigned long p =  *ppos;
-  unsigned int count = size;
-  int ret = 0;
-  struct mem_dev *dev = filp->private_data; /*»ñµÃÉè±¸½á¹¹ÌåÖ¸Õë*/
-  
-  /*·ÖÎöºÍ»ñÈ¡ÓĞĞ§µÄĞ´³¤¶È*/
-  if (p >= MEMDEV_SIZE)
-    return 0;
-  if (count > MEMDEV_SIZE - p)
-    count = MEMDEV_SIZE - p;
-    
-  /*´ÓÓÃ»§¿Õ¼äĞ´ÈëÊı¾İ*/
-  if (copy_from_user(dev->data + p, buf, count))
-    ret =  - EFAULT;
-  else
-  {
-    *ppos += count;
-    ret = count;
-    
-    printk(KERN_INFO "written %d bytes(s) from %d\n", count, p);
-  }
+    unsigned long p =  *ppos;
+    unsigned int count = size;
+    int ret = 0;
+    struct mem_dev *dev = filp->private_data; /*è·å¾—è®¾å¤‡ç»“æ„ä½“æŒ‡é’ˆ*/
 
-  have_data = true; /*ÓĞĞÂµÄÊı¾İ¿É¶Á*/
+    /*åˆ†æå’Œè·å–æœ‰æ•ˆçš„å†™é•¿åº¦*/
+    if (p >= MEMDEV_SIZE)
+        return 0;
+    if (count > MEMDEV_SIZE - p)
+        count = MEMDEV_SIZE - p;
 
-  /*»½ĞÑ¶Á½ø³Ì*/
-  wake_up(&(dev->mem_queue));
+    /*ä»ç”¨æˆ·ç©ºé—´å†™å…¥æ•°æ®*/
+    if (copy_from_user(dev->data + p, buf, count))
+        ret =  - EFAULT;
+    else {
+        *ppos += count;
+        ret = count;
 
-  return ret;
+        printk(KERN_INFO "written %d bytes(s) from %d\n", count, p);
+    }
+
+    have_data = true; /*æœ‰æ–°çš„æ•°æ®å¯è¯»*/
+
+    /*å”¤é†’è¯»è¿›ç¨‹*/
+    wake_up(&(dev->mem_queue));
+
+    return ret;
 }
 
-/* seekÎÄ¼ş¶¨Î»º¯Êı */
+/* seekæ–‡ä»¶å®šä½å‡½æ•° */
 static loff_t mem_llseek(struct file *filp, loff_t offset, int whence)
-{ 
+{
     loff_t newpos;
 
     switch(whence) {
-      case 0: /* SEEK_SET */
+    case 0: /* SEEK_SET */
         newpos = offset;
         break;
 
-      case 1: /* SEEK_CUR */
+    case 1: /* SEEK_CUR */
         newpos = filp->f_pos + offset;
         break;
 
-      case 2: /* SEEK_END */
+    case 2: /* SEEK_END */
         newpos = MEMDEV_SIZE -1 + offset;
         break;
 
-      default: /* can't happen */
+    default: /* can't happen */
         return -EINVAL;
     }
     if ((newpos<0) || (newpos>MEMDEV_SIZE))
-    	return -EINVAL;
-    	
+        return -EINVAL;
+
     filp->f_pos = newpos;
     return newpos;
 
 }
 
-/*ÎÄ¼ş²Ù×÷½á¹¹Ìå*/
-static const struct file_operations mem_fops =
-{
-  .owner = THIS_MODULE,
-  .llseek = mem_llseek,
-  .read = mem_read,
-  .write = mem_write,
-  .open = mem_open,
-  .release = mem_release,
+/*æ–‡ä»¶æ“ä½œç»“æ„ä½“*/
+static const struct file_operations mem_fops = {
+    .owner = THIS_MODULE,
+    .llseek = mem_llseek,
+    .read = mem_read,
+    .write = mem_write,
+    .open = mem_open,
+    .release = mem_release,
 };
 
-/*Éè±¸Çı¶¯Ä£¿é¼ÓÔØº¯Êı*/
+/*è®¾å¤‡é©±åŠ¨æ¨¡å—åŠ è½½å‡½æ•°*/
 static int memdev_init(void)
 {
-  int result;
-  int i;
+    int result;
+    int i;
 
-  dev_t devno = MKDEV(mem_major, 0);
+    dev_t devno = MKDEV(mem_major, 0);
 
-  /* ¾²Ì¬ÉêÇëÉè±¸ºÅ*/
-  if (mem_major)
-    result = register_chrdev_region(devno, 2, "memdev");
-  else  /* ¶¯Ì¬·ÖÅäÉè±¸ºÅ */
-  {
-    result = alloc_chrdev_region(&devno, 0, 2, "memdev");
-    mem_major = MAJOR(devno);
-  }  
-  
-  if (result < 0)
-    return result;
+    /* é™æ€ç”³è¯·è®¾å¤‡å·*/
+    if (mem_major)
+        result = register_chrdev_region(devno, 2, "memdev");
+    else { /* åŠ¨æ€åˆ†é…è®¾å¤‡å· */
+        result = alloc_chrdev_region(&devno, 0, 2, "memdev");
+        mem_major = MAJOR(devno);
+    }
 
-  /*³õÊ¼»¯cdev½á¹¹*/
-  cdev_init(&cdev, &mem_fops);
-  cdev.owner = THIS_MODULE;
-  cdev.ops = &mem_fops;
-  
-  /* ×¢²á×Ö·ûÉè±¸ */
-  cdev_add(&cdev, MKDEV(mem_major, 0), MEMDEV_NR_DEVS);
-   
-  /* ÎªÉè±¸ÃèÊö½á¹¹·ÖÅäÄÚ´æ*/
-  mem_devp = kmalloc(MEMDEV_NR_DEVS * sizeof(struct mem_dev), GFP_KERNEL);
-  if (mem_devp == NULL)    /*ÉêÇëÊ§°Ü*/
-  {
-    result =  - ENOMEM;
-    goto fail_malloc;
-  }
-  memset(mem_devp, 0, sizeof(struct mem_dev));
-  
-  /*ÎªÉè±¸·ÖÅäÄÚ´æ*/
-  for (i=0; i < MEMDEV_NR_DEVS; i++) 
-  {
+    if (result < 0)
+        return result;
+
+    /*åˆå§‹åŒ–cdevç»“æ„*/
+    cdev_init(&cdev, &mem_fops);
+    cdev.owner = THIS_MODULE;
+    cdev.ops = &mem_fops;
+
+    /* æ³¨å†Œå­—ç¬¦è®¾å¤‡ */
+    cdev_add(&cdev, MKDEV(mem_major, 0), MEMDEV_NR_DEVS);
+
+    /* ä¸ºè®¾å¤‡æè¿°ç»“æ„åˆ†é…å†…å­˜*/
+    mem_devp = kmalloc(MEMDEV_NR_DEVS * sizeof(struct mem_dev), GFP_KERNEL);
+    if (mem_devp == NULL) {  /*ç”³è¯·å¤±è´¥*/
+        result =  - ENOMEM;
+        goto fail_malloc;
+    }
+    memset(mem_devp, 0, sizeof(struct mem_dev));
+
+    /*ä¸ºè®¾å¤‡åˆ†é…å†…å­˜*/
+    for (i=0; i < MEMDEV_NR_DEVS; i++) {
         mem_devp[i].size = MEMDEV_SIZE;
         mem_devp[i].data = kmalloc(MEMDEV_SIZE, GFP_KERNEL);
         memset(mem_devp[i].data, 0, MEMDEV_SIZE);
-	init_waitqueue_head(&mem_devp[i].mem_queue);
-  }
-    
-  return 0;
+        init_waitqueue_head(&mem_devp[i].mem_queue);
+    }
 
-  fail_malloc: 
-  unregister_chrdev_region(devno, 1);
-  
-  return result;
+    return 0;
+
+fail_malloc:
+    unregister_chrdev_region(devno, 1);
+
+    return result;
 }
 
-/*Ä£¿éĞ¶ÔØº¯Êı*/
+/*æ¨¡å—å¸è½½å‡½æ•°*/
 static void memdev_exit(void)
 {
-  cdev_del(&cdev);   /*×¢ÏúÉè±¸*/
-  kfree(mem_devp);     /*ÊÍ·ÅÉè±¸½á¹¹ÌåÄÚ´æ*/
-  unregister_chrdev_region(MKDEV(mem_major, 0), 2); /*ÊÍ·ÅÉè±¸ºÅ*/
+    cdev_del(&cdev);   /*æ³¨é”€è®¾å¤‡*/
+    kfree(mem_devp);     /*é‡Šæ”¾è®¾å¤‡ç»“æ„ä½“å†…å­˜*/
+    unregister_chrdev_region(MKDEV(mem_major, 0), 2); /*é‡Šæ”¾è®¾å¤‡å·*/
 }
 
 MODULE_AUTHOR("Hanson He");

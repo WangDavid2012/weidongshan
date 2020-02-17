@@ -1,11 +1,11 @@
 /*********************************************************************************************
-#####         ÉÏº£Ç¶ÈëÊ½¼ÒÔ°-¿ª·¢°åÉÌ³Ç         #####
+#####         ä¸Šæµ·åµŒå…¥å¼å®¶å›­-å¼€å‘æ¿å•†åŸ         #####
 #####                    www.embedclub.com                        #####
 #####             http://embedclub.taobao.com               #####
 
-* File£º	memdev_test.c
+* Fileï¼š	memdev_test.c
 * Author:	Hanson
-* Desc£º A test program in userspace   
+* Descï¼š A test program in userspace
     This example is to introduce the ways to use "select"
      and driver poll
 * History:	May 16th 2011
@@ -20,44 +20,38 @@
 
 main()
 {
-  int fd, num;
-  char Buf[128]="memdev_poll test!";
-  fd_set rfds,wfds;
-  
-  /*ÒÔ·Ç×èÈû·½Ê½´ò¿ª/dev/memdev0Éè±¸ÎÄ¼ş*/
-  fd = open("/dev/memdev0", O_RDWR | O_NONBLOCK);
-  if (fd !=  - 1)
-  {
-	while (1)
-    	{
-      		FD_ZERO(&rfds);
-      		FD_ZERO(&wfds);
-      		FD_SET(fd, &rfds);
-      		FD_SET(fd, &wfds);
+    int fd, num;
+    char Buf[128]="memdev_poll test!";
+    fd_set rfds,wfds;
 
-      		select(fd + 1, &rfds, &wfds, NULL, NULL);
-      		/*Êı¾İ¿É»ñµÃ*/
-      		if (FD_ISSET(fd, &rfds))
-      		{
-      			printf("Poll monitor:can be read\n");
-			lseek(fd, 0, SEEK_SET);
-			read(fd, Buf, sizeof(Buf));
-			printf("Read Buf: %s\n", Buf);
-			sleep(1);
-      		}
-      		/*Êı¾İ¿ÉĞ´Èë*/
-      		if (FD_ISSET(fd, &wfds))
-      		{
-      			printf("Poll monitor:can be written\n");
-			lseek(fd, 0, SEEK_SET);
-			write(fd, Buf, sizeof(Buf));
-			printf("Write Buf: %s\n", Buf);
-			sleep(1);
-      		}      
-   	}
-  }
-  else
-  {
-    printf("Device open failure\n");
-  }
+    /*ä»¥éé˜»å¡æ–¹å¼æ‰“å¼€/dev/memdev0è®¾å¤‡æ–‡ä»¶*/
+    fd = open("/dev/memdev0", O_RDWR | O_NONBLOCK);
+    if (fd !=  - 1) {
+        while (1) {
+            FD_ZERO(&rfds);
+            FD_ZERO(&wfds);
+            FD_SET(fd, &rfds);
+            FD_SET(fd, &wfds);
+
+            select(fd + 1, &rfds, &wfds, NULL, NULL);
+            /*æ•°æ®å¯è·å¾—*/
+            if (FD_ISSET(fd, &rfds)) {
+                printf("Poll monitor:can be read\n");
+                lseek(fd, 0, SEEK_SET);
+                read(fd, Buf, sizeof(Buf));
+                printf("Read Buf: %s\n", Buf);
+                sleep(1);
+            }
+            /*æ•°æ®å¯å†™å…¥*/
+            if (FD_ISSET(fd, &wfds)) {
+                printf("Poll monitor:can be written\n");
+                lseek(fd, 0, SEEK_SET);
+                write(fd, Buf, sizeof(Buf));
+                printf("Write Buf: %s\n", Buf);
+                sleep(1);
+            }
+        }
+    } else {
+        printf("Device open failure\n");
+    }
 }

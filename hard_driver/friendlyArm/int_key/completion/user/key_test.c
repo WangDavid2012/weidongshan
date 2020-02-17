@@ -1,11 +1,11 @@
 /*********************************************************************************************
-#####         ÉÏº£Ç¶ÈëÊ½¼ÒÔ°-¿ª·¢°åÉÌ³Ç         #####
+#####         ä¸Šæµ·åµŒå…¥å¼å®¶å›­-å¼€å‘æ¿å•†åŸ         #####
 #####                    www.embedclub.com                        #####
 #####             http://embedclub.taobao.com               #####
 
-* File£º		key_test.c
+* Fileï¼š		key_test.c
 * Author:		Hanson
-* Desc£º	a test for int key scan device driver 
+* Descï¼š	a test for int key scan device driver 
 * History:	May 16th 2011
 *********************************************************************************************/
 
@@ -26,7 +26,7 @@ int main(void)
 	int key_fd;
 	int key_value[]={0,0,0,0,0,0};
 
-	/*´ò¿ª¼üÅÌÉè±¸ÎÄ¼ş*/
+	/*æ‰“å¼€é”®ç›˜è®¾å¤‡æ–‡ä»¶*/
 	key_fd = open("/dev/key", 0);
 	if (key_fd < 0) {
 		perror("open device key");
@@ -40,10 +40,10 @@ int main(void)
 		FD_ZERO(&rds);
 		FD_SET(key_fd, &rds);
 
-		/*Ê¹ÓÃÏµÍ³µ÷ÓÃselect¼ì²éÊÇ·ñÄÜ¹»´Ó/dev/keyÉè±¸¶ÁÈ¡Êı¾İ*/
+		/*ä½¿ç”¨ç³»ç»Ÿè°ƒç”¨selectæ£€æŸ¥æ˜¯å¦èƒ½å¤Ÿä»/dev/keyè®¾å¤‡è¯»å–æ•°æ®*/
 		ret = select(key_fd + 1, &rds, NULL, NULL, NULL);
 		
-		/*¶ÁÈ¡³ö´íÔòÍË³ö³ÌĞò*/
+		/*è¯»å–å‡ºé”™åˆ™é€€å‡ºç¨‹åº*/
 		if (ret < 0) {
 			perror("select");
 			exit(1);
@@ -52,16 +52,16 @@ int main(void)
 		if (ret == 0) {
 			printf("Timeout.\n");
 		} 
-		/*ÄÜ¹»¶ÁÈ¡µ½Êı¾İ*/
+		/*èƒ½å¤Ÿè¯»å–åˆ°æ•°æ®*/
 		else if (FD_ISSET(key_fd, &rds)) {
-			/*¿ªÊ¼¶ÁÈ¡¼üÅÌÇı¶¯·¢³öµÄÊı¾İ£¬×¢Òâkey_valueºÍ¼üÅÌÇı¶¯ÖĞ¶¨ÒåÎªÒ»ÖÂµÄÀàĞÍ*/
+			/*å¼€å§‹è¯»å–é”®ç›˜é©±åŠ¨å‘å‡ºçš„æ•°æ®ï¼Œæ³¨æ„key_valueå’Œé”®ç›˜é©±åŠ¨ä¸­å®šä¹‰ä¸ºä¸€è‡´çš„ç±»å‹*/
 			int ret = read(key_fd, key_value, sizeof key_value);
 			if (ret != sizeof key_value) {
 				if (errno != EAGAIN)
 					perror("read key\n");
 				continue;
 			} else {
-				/*´òÓ¡¼üÖµ*/
+				/*æ‰“å°é”®å€¼*/
 				for (i = 0; i < 6; i++)
 				    printf("K%d %s, key value = 0x%02x\n", \
 					   i+1, (key_value[i] & 0x80) ? "released": \
@@ -72,7 +72,7 @@ int main(void)
 		}
 	}
 
-	/*¹Ø±ÕÉè±¸ÎÄ¼ş¾ä±ú*/
+	/*å…³é—­è®¾å¤‡æ–‡ä»¶å¥æŸ„*/
 	close(key_fd);
 	return 0;
 }
