@@ -1,8 +1,6 @@
 #include <linux/module.h>
 #include <linux/version.h>
-
 #include <linux/init.h>
-
 #include <linux/kernel.h>
 #include <linux/types.h>
 #include <linux/interrupt.h>
@@ -14,7 +12,6 @@
 
 
 /* 分配/设置/注册一个platform_device */
-
 static struct resource led_resource[] = {
     [0] = {
         .start = 0x56000010,             /* TQ2440的LED是GPB5,6,7,8, GPBCON地址是0x56000010 */
@@ -26,21 +23,26 @@ static struct resource led_resource[] = {
         .end   = 5,
         .flags = IORESOURCE_IRQ,
     }
-
 };
 
 static void led_release(struct device * dev)
 {
 }
 
-
+// struct platform_driver led_drv = {
+// 	.probe		= led_probe,
+// 	.remove		= led_remove,
+// 	.driver		= {
+// 		.name	= "myled",
+// 	}
+// };
 static struct platform_device led_dev = {
     .name         = "myled",
     .id       = -1,
     .num_resources    = ARRAY_SIZE(led_resource),
     .resource     = led_resource,
     .dev = { 
-    	.release = led_release, 
+        .release = led_release, 
 	},
 };
 

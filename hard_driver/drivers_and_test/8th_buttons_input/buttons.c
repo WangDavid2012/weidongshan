@@ -112,14 +112,12 @@ static void buttons_exit(void)
 	{
 		free_irq(pins_desc[i].irq, &pins_desc[i]);
 	}
-
 	del_timer(&buttons_timer);
 	input_unregister_device(buttons_dev);
 	input_free_device(buttons_dev);	
 }
 
 module_init(buttons_init);
-
 module_exit(buttons_exit);
 
 MODULE_LICENSE("GPL");

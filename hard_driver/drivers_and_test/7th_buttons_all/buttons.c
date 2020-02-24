@@ -23,12 +23,10 @@ volatile unsigned long *gpgdat;
 
 static struct timer_list buttons_timer;
 
-
 static DECLARE_WAIT_QUEUE_HEAD(button_waitq);
 
 /* 中断事件标志, 中断服务程序将它置1，sixth_drv_read将它清0 */
 static volatile int ev_press = 0;
-
 static struct fasync_struct *button_async;
 
 
@@ -183,9 +181,8 @@ static void buttons_timer_function(unsigned long data)
 		key_val = pindesc->key_val;
 	}
 
-    ev_press = 1;                  /* 表示中断发生了 */
-    wake_up_interruptible(&button_waitq);   /* 唤醒休眠的进程 */
-	
+    ev_press = 1;                           // 表示中断发生了 
+    wake_up_interruptible(&button_waitq);   // 唤醒休眠的进程 
 	kill_fasync (&button_async, SIGIO, POLL_IN);
 }
 
@@ -225,7 +222,6 @@ static void sixth_drv_exit(void)
 
 
 module_init(sixth_drv_init);
-
 module_exit(sixth_drv_exit);
 
 MODULE_LICENSE("GPL");
